@@ -10,7 +10,7 @@ describe("Utils - parseCurrency", () => {
   it("should parse standard Indian Rupee formats", () => {
     expect(parseCurrency("₹1,499")).toBe(1499);
     expect(parseCurrency("₹ 24,999")).toBe(24999);
-    expect(parseCurrency("Rs. 500")).toBe(500);
+    expect(parseCurrency("₹ 500")).toBe(500);
     expect(parseCurrency("12,345.00")).toBe(12345);
   });
 

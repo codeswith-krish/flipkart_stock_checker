@@ -1,12 +1,11 @@
 import { ProductRepository } from "../../db/repositories/product.repository.js";
-import { formatINR } from "../../shared/utils.js";
 
 export function listCommand(options: { all?: boolean }): void {
   const repo = new ProductRepository();
   const products = options.all ? repo.findAll() : repo.findActive();
 
   if (products.length === 0) {
-    console.log("No products found in the database. Use 'stock add <url> --target-price <amount>' to track items.");
+    console.log("No products found in the database. Use 'stock add <url>' to track items.");
     return;
   }
 
@@ -14,12 +13,23 @@ export function listCommand(options: { all?: boolean }): void {
 
   const formattedRows = products.map((p) => ({
     ID: p.id,
-    Title: p.title.length > 35 ? p.title.slice(0, 32) + "..." : p.title,
-    "Target Price": formatINR(p.targetPrice),
-    "Current Price": formatINR(p.currentPrice),
-    Stock: p.inStock ? "🟢 In Stock" : "🔴 Out of Stock",
+    Title: p.title.length > 30 ? p.title.slice(0, 27) + "..." : p.title,
+    "Product ID": p.productId || "N/A",
     Active: p.isActive ? "Yes" : "No",
-    "Last Checked": p.updatedAt ? new Date(p.updatedAt).toLocaleString() : "Never",
+    "Cart Status":
+      p.cartAvailability === "AVAILABLE"
+        ? "🟢 Available"
+        : p.cartAvailability === "OUT_OF_STOCK"
+        ? "🔴 Out of Stock"
+        : "⚪ Unknown",
+    "Check Status":
+      p.lastCheckStatus === "SUCCESS"
+        ? "🟢 OK"
+        : p.lastCheckStatus === "ERROR"
+        ? "🔴 Error"
+        : "⚪ Never Checked",
+    "Alert State": p.notificationState,
+    "Last Checked": p.lastCheckedAt ? new Date(p.lastCheckedAt).toLocaleString() : "Never",
   }));
 
   console.table(formattedRows);

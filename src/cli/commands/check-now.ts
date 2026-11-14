@@ -1,7 +1,6 @@
 import { ProductRepository } from "../../db/repositories/product.repository.js";
 import { checkEngine } from "../../modules/checker/check-engine.js";
 import { closeBrowser } from "../../modules/scraper/browser.js";
-import { formatINR } from "../../shared/utils.js";
 
 export async function checkNowCommand(options: { id?: string }): Promise<void> {
   const repo = new ProductRepository();
@@ -20,10 +19,10 @@ export async function checkNowCommand(options: { id?: string }): Promise<void> {
       const result = await checkEngine.runSingleCheck(product);
 
       console.log(`\nResult for ${product.title}:`);
-      console.log(`   Price: ${formatINR(result.currentPrice)}`);
-      console.log(`   Stock: ${result.currentInStock ? "🟢 In Stock" : "🔴 Out of Stock"}`);
-      console.log(`   Alert Sent: ${result.alertTriggered ? "Yes" : "No"}`);
-      if (result.error) console.log(`   Error: ${result.error}`);
+      console.log(`   Cart Availability: ${result.cartAvailability || "UNKNOWN"}`);
+      console.log(`   Check Status:      ${result.checkStatus}`);
+      console.log(`   Alert Sent:        ${result.alertTriggered ? "Yes" : "No"}`);
+      if (result.error) console.log(`   Error:             ${result.error}`);
     } else {
       console.log("🔍 Running full check cycle for all active products...");
       const summary = await checkEngine.runAllChecks();
@@ -32,6 +31,8 @@ export async function checkNowCommand(options: { id?: string }): Promise<void> {
       console.log(`   Total Checked:    ${summary.totalChecked}`);
       console.log(`   Alerts Sent:      ${summary.alertsTriggered}`);
     }
+  } catch (error) {
+    console.error(`❌ Check execution failed: ${(error as Error).message}`);
   } finally {
     await closeBrowser();
   }

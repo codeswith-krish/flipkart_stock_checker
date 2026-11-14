@@ -10,6 +10,26 @@ export function parseCurrency(raw: string | null | undefined): number | null {
 }
 
 /**
+ * Extracts canonical Flipkart product ID (PID or item ID from pathname).
+ */
+export function extractFlipkartProductId(rawUrl: string): string | null {
+  try {
+    const url = new URL(rawUrl);
+    const pid = url.searchParams.get("pid");
+    if (pid && pid.trim().length > 0) {
+      return pid.trim();
+    }
+    const match = url.pathname.match(/\/p\/(itm[a-zA-Z0-9]+)/i);
+    if (match && match[1]) {
+      return match[1];
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Sanitizes Flipkart URLs by removing tracking and session query parameters.
  */
 export function sanitizeFlipkartUrl(rawUrl: string): string {
