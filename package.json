@@ -12,6 +12,7 @@
     "dev": "tsx watch src/index.ts",
     "cli": "tsx src/cli/index.ts",
     "auth:login": "tsx scripts/bootstrap-session.ts",
+    "auth:verify": "tsx scripts/verify-session.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
