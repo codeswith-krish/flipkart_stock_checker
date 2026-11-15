@@ -33,8 +33,13 @@ playwright-report/
 playwright/.cache/
 userDataDir/
 user_data/
+browser_profiles/
+.browser_profiles/
 auth.json
+*auth*.json
+*session*.json
 storageState.json
+data/auth/
 
 # Logs & Diagnostics
 *.log
