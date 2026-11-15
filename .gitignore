@@ -1,10 +1,42 @@
+# Dependencies
 node_modules/
+
+# Build outputs
 dist/
-data/*.db
-data/*.db-wal
-data/*.db-shm
-!data/.gitkeep
+
+# Environment & Credentials
 .env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+*.crt
+credentials.json
+token.json
+
+# SQLite Databases & Backups
+*.db
+*.db-wal
+*.db-shm
+*.db-journal
+*.db.bak*
+*.sqlite
+*.sqlite3
+data/*
+!data/.gitkeep
+
+# Playwright & Browser Sessions
+.playwright/
+test-results/
+playwright-report/
+playwright/.cache/
+userDataDir/
+user_data/
+auth.json
+storageState.json
+
+# Logs & Diagnostics
 *.log
 npm-debug.log*
 coverage/

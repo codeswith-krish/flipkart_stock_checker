@@ -21,7 +21,6 @@ program
   .command("add")
   .description("Add a Flipkart product URL to track")
   .argument("<url>", "Flipkart product URL")
-  .requiredOption("-t, --target-price <number>", "Target alert price in INR")
   .option("--title <name>", "Optional custom product title")
   .action(addCommand);
 

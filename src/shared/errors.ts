@@ -13,8 +13,12 @@ export class ConfigurationError extends AppError {
 }
 
 export class DatabaseError extends AppError {
-  constructor(message: string, cause?: unknown) {
-    super(message, "DATABASE_ERROR", cause);
+  constructor(message: string, codeOrCause?: string | unknown, cause?: unknown) {
+    if (typeof codeOrCause === "string" && codeOrCause.length > 0) {
+      super(message, codeOrCause, cause);
+    } else {
+      super(message, "DATABASE_ERROR", codeOrCause);
+    }
   }
 }
 
