@@ -9,6 +9,7 @@ export async function addCommand(
   if (!isValidFlipkartUrl(url)) {
     console.error("❌ Error: Invalid Flipkart product URL provided.");
     process.exit(1);
+    return;
   }
 
   const cleanUrl = sanitizeFlipkartUrl(url);

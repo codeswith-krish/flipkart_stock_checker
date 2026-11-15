@@ -49,5 +49,7 @@ export interface CheckResult {
   cartAvailability?: CartAvailability;
   checkStatus: CheckStatus;
   alertTriggered: boolean;
+  notificationQueued?: boolean;
+  reason?: string;
   error?: string;
 }
