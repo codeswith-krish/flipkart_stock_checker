@@ -1,6 +1,8 @@
 import { ProductRepository } from "../../db/repositories/product.repository.js";
 import { checkEngine } from "../../modules/checker/check-engine.js";
 import { closeBrowser } from "../../modules/scraper/browser.js";
+import { notificationDispatcher } from "../../modules/notifier/dispatcher.js";
+import { logger } from "../../shared/logger.js";
 
 export async function checkNowCommand(options: { id?: string }): Promise<void> {
   const repo = new ProductRepository();
@@ -35,6 +37,17 @@ export async function checkNowCommand(options: { id?: string }): Promise<void> {
   } catch (error) {
     console.error(`❌ Check execution failed: ${(error as Error).message}`);
   } finally {
+    // Release browser resources immediately before notification dispatch
     await closeBrowser();
+  }
+
+  // Trigger post-check notification sweep
+  try {
+    const dispatchResult = await notificationDispatcher.dispatchPending();
+    if (dispatchResult.dispatchedCount > 0) {
+      console.log(`📬 Dispatched ${dispatchResult.dispatchedCount} Telegram alert(s).`);
+    }
+  } catch (dispatchErr: any) {
+    logger.error("Error during post-check notification dispatch", dispatchErr);
   }
 }

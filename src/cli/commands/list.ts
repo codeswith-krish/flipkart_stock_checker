@@ -28,7 +28,7 @@ export function listCommand(options: { all?: boolean }): void {
         : p.lastCheckStatus === "ERROR"
         ? "🔴 Error"
         : "⚪ Never Checked",
-    "Alert State": p.notificationState,
+    "Alert State": p.retryCount >= 5 ? "SUSPENDED" : p.notificationState,
     "Last Checked": p.lastCheckedAt ? new Date(p.lastCheckedAt).toLocaleString() : "Never",
   }));
 
