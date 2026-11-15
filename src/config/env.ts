@@ -20,6 +20,7 @@ const envSchema = z.object({
     .string()
     .default("30000")
     .transform((val) => parseInt(val, 10) || 30000),
+  SESSION_STORAGE_PATH: z.string().default("./data/auth/flipkart_session.json"),
   LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
 });
 
@@ -40,8 +41,13 @@ export function loadConfig(overrideEnv?: Record<string, string>): EnvConfig {
     ? result.data.DATABASE_PATH
     : path.resolve(process.cwd(), result.data.DATABASE_PATH);
 
+  const resolvedSessionPath = path.isAbsolute(result.data.SESSION_STORAGE_PATH)
+    ? result.data.SESSION_STORAGE_PATH
+    : path.resolve(process.cwd(), result.data.SESSION_STORAGE_PATH);
+
   return {
     ...result.data,
     DATABASE_PATH: resolvedDbPath,
+    SESSION_STORAGE_PATH: resolvedSessionPath,
   };
 }
