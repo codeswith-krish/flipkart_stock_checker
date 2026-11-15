@@ -36,6 +36,10 @@ describe("Database & ProductRepository Integration (In-Memory)", () => {
       expect(product.notificationState).toBe("IDLE");
       expect(product.lastAlertSentAt).toBeNull();
       expect(product.lastCheckedAt).toBeNull();
+      expect(product.notificationCycle).toBe(0);
+      expect(product.retryCount).toBe(0);
+      expect(product.nextRetryAt).toBeNull();
+      expect(product.lastDeliveryError).toBeNull();
       expect(product.createdAt).toBeDefined();
       expect(product.updatedAt).toBeDefined();
     });

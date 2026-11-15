@@ -11,6 +11,10 @@ CREATE TABLE IF NOT EXISTS products (
   notification_state TEXT NOT NULL DEFAULT 'IDLE',
   last_alert_sent_at TEXT,
   last_checked_at TEXT,
+  notification_cycle INTEGER NOT NULL DEFAULT 0,
+  retry_count INTEGER NOT NULL DEFAULT 0,
+  next_retry_at TEXT,
+  last_delivery_error TEXT,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
@@ -18,4 +22,11 @@ CREATE TABLE IF NOT EXISTS products (
 CREATE INDEX IF NOT EXISTS idx_products_active ON products(is_active);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_products_url ON products(url);
 CREATE INDEX IF NOT EXISTS idx_products_product_id ON products(product_id);
+CREATE INDEX IF NOT EXISTS idx_products_pending_dispatch ON products(notification_state, is_active, cart_availability, retry_count, next_retry_at);
+
+CREATE TABLE IF NOT EXISTS chat_cooldowns (
+  chat_id TEXT PRIMARY KEY,
+  cooldown_until TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
 `;

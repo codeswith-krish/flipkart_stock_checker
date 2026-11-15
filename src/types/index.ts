@@ -14,8 +14,17 @@ export interface Product {
   notificationState: NotificationState;
   lastAlertSentAt: string | null;
   lastCheckedAt: string | null;
+  notificationCycle: number;
+  retryCount: number;
+  nextRetryAt: string | null;
+  lastDeliveryError: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface NotificationFailureDetails {
+  error: string;
+  isPermanent?: boolean;
 }
 
 export interface NewProductInput {

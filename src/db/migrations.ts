@@ -65,21 +65,33 @@ export function runMigrations(db?: DatabaseInstance): void {
         { name: "notification_state", ddl: "ALTER TABLE products ADD COLUMN notification_state TEXT NOT NULL DEFAULT 'IDLE'" },
         { name: "last_alert_sent_at", ddl: "ALTER TABLE products ADD COLUMN last_alert_sent_at TEXT" },
         { name: "last_checked_at", ddl: "ALTER TABLE products ADD COLUMN last_checked_at TEXT" },
+        { name: "notification_cycle", ddl: "ALTER TABLE products ADD COLUMN notification_cycle INTEGER NOT NULL DEFAULT 0" },
+        { name: "retry_count", ddl: "ALTER TABLE products ADD COLUMN retry_count INTEGER NOT NULL DEFAULT 0" },
+        { name: "next_retry_at", ddl: "ALTER TABLE products ADD COLUMN next_retry_at TEXT" },
+        { name: "last_delivery_error", ddl: "ALTER TABLE products ADD COLUMN last_delivery_error TEXT" },
       ];
 
-      for (const col of desiredColumns) {
-        if (!columnNames.has(col.name.toLowerCase())) {
-          logger.info(`Adding missing column to products: ${col.name}`);
-          database.exec(col.ddl);
+      database.transaction(() => {
+        for (const col of desiredColumns) {
+          if (!columnNames.has(col.name.toLowerCase())) {
+            logger.info(`Adding missing column to products: ${col.name}`);
+            database.exec(col.ddl);
+          }
         }
-      }
 
-      // Ensure indexes exist non-destructively
-      database.exec(`
-        CREATE INDEX IF NOT EXISTS idx_products_active ON products(is_active);
-        CREATE UNIQUE INDEX IF NOT EXISTS idx_products_url ON products(url);
-        CREATE INDEX IF NOT EXISTS idx_products_product_id ON products(product_id);
-      `);
+        // Ensure indexes and auxiliary tables exist non-destructively
+        database.exec(`
+          CREATE INDEX IF NOT EXISTS idx_products_active ON products(is_active);
+          CREATE UNIQUE INDEX IF NOT EXISTS idx_products_url ON products(url);
+          CREATE INDEX IF NOT EXISTS idx_products_product_id ON products(product_id);
+          CREATE INDEX IF NOT EXISTS idx_products_pending_dispatch ON products(notification_state, is_active, cart_availability, retry_count, next_retry_at);
+          CREATE TABLE IF NOT EXISTS chat_cooldowns (
+            chat_id TEXT PRIMARY KEY,
+            cooldown_until TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+          );
+        `);
+      })();
       logger.info("Products table verified and upgraded safely.");
     }
 
