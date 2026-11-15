@@ -27,14 +27,18 @@ export async function getBrowser(): Promise<Browser> {
   launchPromise = (async () => {
     try {
       logger.debug("Launching Playwright Chromium instance...");
+      const launchArgs = [
+        "--disable-dev-shm-usage",
+        "--disable-gpu",
+      ];
+
+      if (config.BROWSER_NO_SANDBOX) {
+        launchArgs.unshift("--no-sandbox", "--disable-setuid-sandbox");
+      }
+
       browserInstance = await chromium.launch({
         headless: config.BROWSER_HEADLESS,
-        args: [
-          "--no-sandbox",
-          "--disable-setuid-sandbox",
-          "--disable-dev-shm-usage",
-          "--disable-gpu",
-        ],
+        args: launchArgs,
       });
 
       browserInstance.on("disconnected", () => {

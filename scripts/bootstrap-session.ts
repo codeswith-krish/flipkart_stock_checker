@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import readline from "node:readline";
+import { fileURLToPath } from "node:url";
 import { chromium, type Browser, type BrowserContext, type Page } from "playwright";
 import { config } from "../src/config/index.js";
 import { logger } from "../src/shared/logger.js";
@@ -200,7 +201,13 @@ export async function runSessionBootstrap(
 }
 
 // Direct CLI execution entry point
-if (process.argv[1] && process.argv[1].endsWith("bootstrap-session.ts")) {
+const isDirectRun =
+  process.argv[1] &&
+  (fileURLToPath(import.meta.url) === path.resolve(process.argv[1]) ||
+    process.argv[1].endsWith("bootstrap-session.ts") ||
+    process.argv[1].endsWith("bootstrap-session.js"));
+
+if (isDirectRun) {
   console.log("=================================================");
   console.log("       Flipkart Session Authentication Setup     ");
   console.log("=================================================");

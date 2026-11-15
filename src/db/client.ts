@@ -18,7 +18,11 @@ export function getDb(customPath?: string): DatabaseInstance {
     if (dbPath !== ":memory:") {
       const dir = path.dirname(dbPath);
       if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
+        fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
+      } else {
+        try {
+          fs.chmodSync(dir, 0o700);
+        } catch {}
       }
     }
 

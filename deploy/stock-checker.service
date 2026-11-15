@@ -1,0 +1,32 @@
+[Unit]
+Description=Flipkart Stock Checker Background Daemon
+Documentation=https://github.com/example/stock_checker
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/stock_checker
+EnvironmentFile=/home/ubuntu/stock_checker/.env
+Environment=NODE_OPTIONS="--max-old-space-size=256"
+ExecStart=/usr/bin/node /home/ubuntu/stock_checker/dist/index.js
+Restart=always
+RestartSec=15
+
+# Graceful shutdown configuration
+TimeoutStopSec=30
+KillMode=control-group
+KillSignal=SIGTERM
+
+# Resource limits tuned for Oracle Cloud Always Free 1GB RAM VM
+MemoryHigh=600M
+MemoryMax=750M
+LimitNOFILE=65536
+
+# Direct logging to systemd journal
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=stock-checker
+
+[Install]
+WantedBy=multi-user.target

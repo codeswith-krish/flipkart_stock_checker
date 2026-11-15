@@ -16,6 +16,10 @@ const envSchema = z.object({
     .string()
     .default("true")
     .transform((val) => val === "true" || val === "1"),
+  BROWSER_NO_SANDBOX: z
+    .string()
+    .default("true")
+    .transform((val) => val === "true" || val === "1"),
   SCRAPER_TIMEOUT_MS: z
     .string()
     .default("30000")
@@ -35,6 +39,20 @@ export function loadConfig(overrideEnv?: Record<string, string>): EnvConfig {
       .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
       .join(", ");
     throw new ConfigurationError(`Environment configuration error: ${errorMessages}`);
+  }
+
+  // Production fail-fast validation: ensure real Telegram credentials are configured
+  if (result.data.NODE_ENV === "production") {
+    if (!result.data.TELEGRAM_BOT_TOKEN || result.data.TELEGRAM_BOT_TOKEN === "dummy_token") {
+      throw new ConfigurationError(
+        "Production environment requires a valid TELEGRAM_BOT_TOKEN. Default dummy token is not permitted."
+      );
+    }
+    if (!result.data.TELEGRAM_CHAT_ID || result.data.TELEGRAM_CHAT_ID === "dummy_chat_id") {
+      throw new ConfigurationError(
+        "Production environment requires a valid TELEGRAM_CHAT_ID. Default dummy chat ID is not permitted."
+      );
+    }
   }
 
   const resolvedDbPath = path.isAbsolute(result.data.DATABASE_PATH)
