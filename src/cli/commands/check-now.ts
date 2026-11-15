@@ -13,6 +13,7 @@ export async function checkNowCommand(options: { id?: string }): Promise<void> {
       if (!product) {
         console.error(`❌ Product ID ${id} not found.`);
         process.exit(1);
+        return;
       }
 
       console.log(`🔍 Checking product ID ${id}: ${product.title}...`);
@@ -21,7 +22,7 @@ export async function checkNowCommand(options: { id?: string }): Promise<void> {
       console.log(`\nResult for ${product.title}:`);
       console.log(`   Cart Availability: ${result.cartAvailability || "UNKNOWN"}`);
       console.log(`   Check Status:      ${result.checkStatus}`);
-      console.log(`   Alert Sent:        ${result.alertTriggered ? "Yes" : "No"}`);
+      console.log(`   Notification Queued: ${result.notificationQueued ? "Yes" : "No"}`);
       if (result.error) console.log(`   Error:             ${result.error}`);
     } else {
       console.log("🔍 Running full check cycle for all active products...");
@@ -29,7 +30,7 @@ export async function checkNowCommand(options: { id?: string }): Promise<void> {
 
       console.log(`\n✅ Check cycle finished.`);
       console.log(`   Total Checked:    ${summary.totalChecked}`);
-      console.log(`   Alerts Sent:      ${summary.alertsTriggered}`);
+      console.log(`   Notifications Queued: ${summary.alertsTriggered}`);
     }
   } catch (error) {
     console.error(`❌ Check execution failed: ${(error as Error).message}`);
